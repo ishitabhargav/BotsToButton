@@ -1,19 +1,31 @@
-# This is a sample Python script.
+import numpy as np
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+#rows, cols, elements = (5, 5, 2)
+#arr = [[[0 for _ in range(elements)] for _ in range(cols)] for _ in range(rows)]
+size = 5
+
+arr = np.zeros((size, size, 2))
+
+arr[4][3][1] = 1
+
+print(arr)
+
+"""
+for row in arr:
+    for element in row:
+        element = [2, 5]
+        print(element)
+print ('h')
+
+for row in arr:
+    for element in row:
+        print(element)
+"""
+
+# open first cell at random
+randRow = np.random.randint(0, size)
+randCol = np.random.randint(0, size)
+
+arr[randRow][randCol] = [1, 0]
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-print("hey can you see this")
-print("yes I can. can you?")
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
