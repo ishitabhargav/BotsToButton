@@ -47,7 +47,7 @@ def findDistanceBetween(x1, y1, x2, y2, size, arr) -> int:
                 queue.append((next_x, next_y))
                 visited[next_x][next_y] = 1
                 distanceFromX1Y1[(next_x, next_y)] = distanceFromX1Y1[(x, y)] + 1
-    return -1
+    return -1 # something went wrong: never got to (x2, y2)
 
 
 class Ship:
