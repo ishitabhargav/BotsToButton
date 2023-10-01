@@ -1,16 +1,17 @@
 import numpy as np
 from collections import deque
 
-def getValidNeighbors(row, col, size) -> list[[int, int]]:  # neighbors that are inbounds
+
+def getValidNeighbors(row, col, size) -> list[(int, int)]:  # neighbors that are inbounds
     validNeighbors = []
     if row + 1 < size:
-        validNeighbors.append([row + 1, col])
+        validNeighbors.append((row + 1, col))
     if col + 1 < size:
-        validNeighbors.append([row, col + 1])
+        validNeighbors.append((row, col + 1))
     if row - 1 >= 0:
-        validNeighbors.append([row - 1, col])
+        validNeighbors.append((row - 1, col))
     if col - 1 >= 0:
-        validNeighbors.append([row, col - 1])
+        validNeighbors.append((row, col - 1))
     return validNeighbors
 
 
@@ -35,22 +36,18 @@ def findDistanceBetween(x1, y1, x2, y2, size, arr) -> int:
     queue = deque([(x1, y1)])
     arr[x1][y1][1] = 1
     distanceFromX1Y1 = {(x1, y1): 0}
-    countWhile = 0
-    countDontPrint = 0
-    while arr[x2][y2][1] != 1 and queue:
+    visited = np.zeros((size, size))
+    visited[x1][y1] = 1
+    while queue:
         x, y = queue.popleft()
         for next_x, next_y in getValidNeighbors(x, y, size):
-            if arr[next_x][next_y][1] != 1 and arr[next_x][next_y][0] == 1:
+            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] == 1:
                 if next_x == x2 and next_y == y2:
-                    print("while " + str(countWhile))
                     return distanceFromX1Y1[(x, y)] + 1
                 queue.append((next_x, next_y))
-                arr[next_x][next_y][1] = 1
+                visited[next_x][next_y] = 1
                 distanceFromX1Y1[(next_x, next_y)] = distanceFromX1Y1[(x, y)] + 1
-        countWhile = countWhile + 1
-    countDontPrint = countDontPrint + 1
-    print("no return: " + str(countDontPrint))
-    return -1 # distanceFromX1Y1[(x2, y2)]
+    return -1
 
 
 class Ship:
@@ -153,8 +150,12 @@ class Ship:
                     if arr[x1][y1][0] == 1 and arr[x2][y2][0] == 1:  # make sure both cells are open
                         if x1 == x2 and y1 == y2:
                             distancesHashtable[((x1, y1), (x2, y2))] = 0  # dist to itself is 0
+                            print("distance from (" + str(x1) + ", " + str(y1) + ") to (" + str(x2) + ", " + str(y2) +
+                                  ") is 0")
                         else:
                             distancesHashtable[((x1, y1), (x2, y2))] = findDistanceBetween(x1, y1, x2, y2, size, arr)
+                            print("distance from (" + str(x1) + ", " + str(y1) + ") to (" + str(x2) + ", " + str(y2) +
+                                  ") is " + str(distancesHashtable[((x1, y1), (x2, y2))]))
 
     # pick 3 different locations for fire, bot, and button
     indexFirstCellOnFire = np.random.randint(0, len(openCells))
