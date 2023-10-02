@@ -51,7 +51,7 @@ def findDistanceBetween(x1, y1, x2, y2, size, arr) -> int:
 
 
 class Ship:
-    size = 5
+    size = 20
     arr = np.zeros((size, size, 2))
     print(arr)
     # open first cell at random
@@ -197,3 +197,9 @@ class Ship:
 
     def get_size(self):
         return self.size
+
+    def get_arr(self):
+        return self.arr
+
+    def get_distancesHashtable(self):
+        return self.distancesHashtable
