@@ -80,13 +80,13 @@ class Ship:
         """
         while self.closedNeighbors:  # choose a closed neighbor at random to open, from list of closed cells with one open neighbor
             # 1. pick a closed neighbor and open it at random
-            sizeClosedNeighbors = len(self.closedNeighbors)
-            rand = np.random.randint(0, sizeClosedNeighbors)
-            neighborToOpen = self.closedNeighbors.pop(rand)
-            rowToOpen = neighborToOpen[0]
-            colToOpen = neighborToOpen[1]
-            self.arr[rowToOpen][colToOpen][0] = 1
-            self.openCells.append([rowToOpen, colToOpen])
+            self.sizeClosedNeighbors = len(self.closedNeighbors)
+            self.rand = np.random.randint(0, self.sizeClosedNeighbors)
+            self.neighborToOpen = self.closedNeighbors.pop(self.rand)
+            self.rowToOpen = self.neighborToOpen[0]
+            self.colToOpen = self.neighborToOpen[1]
+            self.arr[self.rowToOpen][self.colToOpen][0] = 1
+            self.openCells.append([self.rowToOpen, self.colToOpen])
             # 2. remove existing neighbors in closedNeighbors that now have 2 or more open neighbors
             validNeighbors = getValidNeighbors(rowToOpen, colToOpen, self.size)
             for neighbor in validNeighbors:
@@ -95,7 +95,7 @@ class Ship:
                     if numOpenNeighbors(neighborsOfClosed, self.arr) > 1 and neighbor in self.closedNeighbors:
                         self.closedNeighbors.remove(neighbor)
             # 3. add the closed neighbors of neighborToOpen
-            addNeighbors(rowToOpen, colToOpen, self.arr, self.closedNeighbors, self.size)
+            addNeighbors(self.rowToOpen, self.colToOpen, self.arr, self.closedNeighbors, self.size)
             """for row in arr:
                 for col in row:
                     if col[0] == 1:  # it's open
@@ -107,22 +107,27 @@ class Ship:
             print(openCells)
             print("\n")"""
 
-        deadEnds = []
+        '''print("after closed neighbors ")
+        for item in self.openCells:
+            print(str(self.arr[item[0]][item[1]][0]) + " ", end="")
+        print("\n")'''
+
+        self.deadEnds = []
         for cell in self.openCells:
             if numOpenNeighbors(getValidNeighbors(cell[0], cell[1], self.size), self.arr) == 1:
-                deadEnds.append(cell)
+                self.deadEnds.append(cell)
 
         #print("Dead Ends:")
         #print(deadEnds)
         #print("\n")
-        origNumDeadEnds = len(deadEnds)
+        self.origNumDeadEnds = len(self.deadEnds)
         #print("Now starting with dead ends.\n")
-        while len(deadEnds) > 0.50 * origNumDeadEnds:
-            randCell = np.random.randint(0, len(deadEnds))
-            deadEnd = deadEnds.pop(randCell)
-            deadEndsClosedNeighbors = []
-            validNeighbors = getValidNeighbors(deadEnd[0], deadEnd[1], self.size)
-            for neighbor in validNeighbors:  # can change to x, y
+        while len(self.deadEnds) > 0.50 * self.origNumDeadEnds:
+            self.randCell = np.random.randint(0, len(self.deadEnds))
+            self.deadEnd = self.deadEnds.pop(self.randCell)
+            self.deadEndsClosedNeighbors = []
+            self.validNeighbors = getValidNeighbors(self.deadEnd[0], self.deadEnd[1], self.size)
+            for neighbor in self.validNeighbors:  # can change to x, y
                 if self.arr[neighbor[0]][neighbor[1]][0] == 0:
                     deadEndsClosedNeighbors.append(neighbor)
             randCell = np.random.randint(0, len(deadEndsClosedNeighbors))
@@ -145,20 +150,34 @@ class Ship:
     
         print("End of Dead Ends\n")"""
 
+        '''print("after dead ends ")
+        for item in self.openCells:
+            print(str(self.arr[item[0]][item[1]][0]) + " ", end="")
+        print("\n")'''
+
+        for item in self.openCells:
+            if self.arr[item[0]][item[1]][0] == 0:
+                print("remove this cell: " + str(item))
+                self.openCells.remove(item)
+
         # pick 3 different locations for fire, bot, and button
-        indexFirstCellOnFire = np.random.randint(0, len(self.openCells))
-        self.firstCellOnFire = self.openCells.pop(indexFirstCellOnFire)
+        self.indexFirstCellOnFire = np.random.randint(0, len(self.openCells))
+        self.firstCellOnFire = self.openCells.pop(self.indexFirstCellOnFire)
         self.arr[self.firstCellOnFire[0]][self.firstCellOnFire[1]][0] = 2  # this cell is on fire
-        indexBot = np.random.randint(0, len(self.openCells))
-        self.bot = self.openCells.pop(indexBot)
-        indexButton = np.random.randint(0, len(self.openCells))
-        self.button = self.openCells.pop(indexButton)
+        self.indexBot = np.random.randint(0, len(self.openCells))
+        self.bot = self.openCells.pop(self.indexBot)
+        self.indexButton = np.random.randint(0, len(self.openCells))
+        self.button = self.openCells.pop(self.indexButton)
 
         # add the cells back into the openCells list
         self.openCells.append(self.firstCellOnFire)
         self.openCells.append(self.bot)
         self.openCells.append(self.button)
 
+        '''print("after picking 3 cells ")
+        for item in self.openCells:
+            print(str(self.arr[item[0]][item[1]][0]) + " ", end="")
+        print("\n")'''
         # make distances hashtable to store initial distances from open cells to other open cells
         self.distancesHashtable = {}
 

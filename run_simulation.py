@@ -1,6 +1,6 @@
 from shipFile import Ship, getValidNeighbors
 import numpy as np
-
+import random
 
 # set up list of q values
 qList = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
@@ -22,9 +22,9 @@ def spreadFire(arr, neighborsOfFire, size, q, fireCells):
     for neighbor in neighborsOfFire:
         if arr[neighbor[0]][neighbor[1]][0] == 1:
             k = numFireNeighbors(getValidNeighbors(neighbor[0], neighbor[1], size), arr)
-            prob = 1 - (1 - q) ** k
-            rand = np.random.randint(0, 1)
-            if rand >= prob:  # the cell catches on fire
+            prob = 1 - ((1 - q) ** k)
+            rand = random.random()  # np.random.rand(0, 1)
+            if rand < prob:  # the cell catches on fire
                 arr[neighbor[0]][neighbor[1]][0] = 2
                 neighborsOfFire.remove(neighbor)
                 fireCells.append(neighbor)
