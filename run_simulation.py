@@ -18,9 +18,9 @@ print("done")
 """
 
 
-def spreadFire(arr, neighborsOfFire, size, q):
+def spreadFire(arr, neighborsOfFire, size, q, fireCells):
     for neighbor in neighborsOfFire:
-        if arr[neighbor[0]][neighbor[1]] != 2:
+        if arr[neighbor[0]][neighbor[1]][0] == 1:
             k = numFireNeighbors(getValidNeighbors(neighbor[0], neighbor[1], size), arr)
             prob = 1 - (1 - q) ** k
             rand = np.random.randint(0, 1)
@@ -30,7 +30,7 @@ def spreadFire(arr, neighborsOfFire, size, q):
                 fireCells.append(neighbor)
                 neighborsOfNewFireCell = getValidNeighbors(neighbor[0], neighbor[1], size)
                 for newNeighbor in neighborsOfNewFireCell:
-                    if newNeighbor not in neighborsOfFire and arr[newNeighbor[0]][newNeighbor[1]][0] != 2:
+                    if newNeighbor not in neighborsOfFire and arr[newNeighbor[0]][newNeighbor[1]][0] == 1:
                         neighborsOfFire.append(newNeighbor)
 
 def numFireNeighbors(neighbors, arr) -> int:
@@ -39,5 +39,24 @@ def numFireNeighbors(neighbors, arr) -> int:
         if arr[neighbor[0]][neighbor[1]][0] == 2:
             count = count + 1
     return count
+
+def getValidOpen(row, col, size, arr, firstCellOnFire) -> list[(int, int)]:
+    validNeighbors = getValidNeighbors(row, col, size)
+    validOpen = []
+    for valid in validNeighbors:
+        if arr[valid[0]][valid[1]][0] != 0 and valid != firstCellOnFire:
+            validOpen.append(tuple(valid))
+    return validOpen
+
+
+winsHashtableBot1 = {}
+winsHashtableBot2 = {}
+winsHashtableBot3 = {}
+winsHashtableBot4 = {}
+for q in qList:
+    winsHashtableBot1[q] = 0
+    winsHashtableBot2[q] = 0
+    winsHashtableBot3[q] = 0
+    winsHashtableBot4[q] = 0
 
 # Bot 1
