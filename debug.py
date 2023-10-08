@@ -127,3 +127,19 @@ while arr[bot[0]][bot[1]][0] != 2 and arr[button[0]][button[1]][0] != 2 and not 
 
 for item in winsHashtableBot1:
     print(item, winsHashtableBot1[item])
+
+'''while len(self.deadEnds) > 0.50 * self.origNumDeadEnds:
+    self.randCell = np.random.randint(0, len(self.deadEnds))
+    self.deadEnd = self.deadEnds.pop(self.randCell)
+    self.deadEndsClosedNeighbors = []
+    self.validNeighbors = getValidNeighbors(self.deadEnd[0], self.deadEnd[1], self.size)
+    for neighbor in self.validNeighbors:  # can change to x, y
+        if self.arr[neighbor[0]][neighbor[1]][0] == 0:
+            self.deadEndsClosedNeighbors.append(neighbor)
+    self.randCell2 = np.random.randint(0, len(self.deadEndsClosedNeighbors))
+    self.deadEndNeighbor = self.deadEndsClosedNeighbors.pop(self.randCell2)
+    self.arr[self.deadEndNeighbor[0]][self.deadEndNeighbor[1]][0] = 1
+    for deadEnd in self.deadEnds:
+        if numOpenNeighbors(getValidNeighbors(deadEnd[0], deadEnd[1], self.size), self.arr) != 1:
+            self.deadEnds.remove(deadEnd)
+    self.openCells.append(self.deadEndNeighbor)'''

@@ -57,7 +57,7 @@ class Ship:
     #size = 10
 
     def __init__(self):
-        self.size = 10
+        self.size = 15
         self.arr = np.zeros((self.size, self.size, 2))
         self.randRow = np.random.randint(1, self.size - 1)
         self.randCol = np.random.randint(1, self.size - 1)
