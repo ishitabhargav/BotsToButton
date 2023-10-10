@@ -33,42 +33,39 @@ def addNeighbors(row, col, arr, closedNeighbors,
 
 
 def findDistanceBetween(x1, y1, x2, y2, size, arr) -> int:
-    #queue = deque([(x1, y1)])
+    if x1 == x2 and y1 == y2 and arr[x1][y1][0] != 0 and arr[x1][y1][0] != 2:
+        return 0
     queue = [(x1, y1)]
-    #arr[x1][y1][1] = 1
     distanceFromX1Y1 = {(x1, y1): 0}
     visited = np.zeros((size, size))
     visited[x1][y1] = 1
     while queue:
-        # print("queue not empty")
         x, y = queue.pop(0)
         for next_x, next_y in getValidNeighbors(x, y, size):
-            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] == 1:
+            # calculate distance for cell of val 1 or 3
+            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] != 0 and arr[next_x][next_y][0] != 2:
                 if next_x == x2 and next_y == y2:
-                    # print("found distance")
                     return distanceFromX1Y1[(x, y)] + 1
                 queue.append((next_x, next_y))
-                # print("appended (" + str(next_x) + ", " + str(next_y) + ")")
                 visited[next_x][next_y] = 1
                 distanceFromX1Y1[(next_x, next_y)] = distanceFromX1Y1[(x, y)] + 1
-    # print("Didn't find distance between smth")
-    return -1 # means something went wrong: never got to (x2, y2)
+    return -1  # means something went wrong: never got to (x2, y2)
 
 
 class Ship:
-    #size = 10
+    # size = 10
 
     def __init__(self):
-        self.size = 15
+        self.size = 40
         self.arr = np.zeros((self.size, self.size, 2))
         self.randRow = np.random.randint(1, self.size - 1)
         self.randCol = np.random.randint(1, self.size - 1)
         self.arr[self.randRow][self.randCol][0] = 1  # open first cell
         self.closedNeighbors = []
         self.openCells = [[self.randRow, self.randCol]]
-        #print("Open Cells:")
-        #print(openCells)
-        #print()
+        # print("Open Cells:")
+        # print(openCells)
+        # print()
         addNeighbors(self.randRow, self.randCol, self.arr, self.closedNeighbors, self.size)
         """
         for row in arr:
@@ -119,11 +116,11 @@ class Ship:
             if numOpenNeighbors(getValidNeighbors(cell[0], cell[1], self.size), self.arr) == 1:
                 self.deadEnds.append(cell)
 
-        #print("Dead Ends:")
-        #print(deadEnds)
-        #print("\n")
+        # print("Dead Ends:")
+        # print(deadEnds)
+        # print("\n")
         self.origNumDeadEnds = len(self.deadEnds)
-        #print("Now starting with dead ends.\n")
+        # print("Now starting with dead ends.\n")
         while len(self.deadEnds) > 0.50 * self.origNumDeadEnds:
             randCell = np.random.randint(0, len(self.deadEnds))
             deadEnd = self.deadEnds.pop(randCell)
@@ -150,7 +147,7 @@ class Ship:
             print("Dead ends now:")
             print(deadEnds)
             print("\n")
-    
+
         print("End of Dead Ends\n")"""
 
         '''print("after dead ends ")
@@ -181,7 +178,7 @@ class Ship:
         for item in self.openCells:
             print(str(self.arr[item[0]][item[1]][0]) + " ", end="")
         print("\n")'''
-        # make distances hashtable to store initial distances from open cells to other open cells
+        ''''# make distances hashtable to store initial distances from open cells to other open cells
         self.distancesHashtable = {}
 
         for x1 in range(self.size):
@@ -194,14 +191,17 @@ class Ship:
                                 # print("distance from (" + str(x1) + ", " + str(y1) + ") to (" + str(x2) + ", " + str(y2) +
                                 # ") is 0")
                             else:
-                                self.distancesHashtable[((x1, y1), (x2, y2))] = findDistanceBetween(x1, y1, x2, y2, self.size, self.arr)
+                                self.distancesHashtable[((x1, y1), (x2, y2))] = findDistanceBetween(x1, y1, x2, y2,
+                                                                                                    self.size, self.arr)
                                 if self.distancesHashtable[((x1, y1), (x2, y2))] == -1:
                                     self.distancesHashtable[((x1, y1), (x2, y2))] = float('inf')
                                 # print("distance from (" + str(x1) + ", " + str(y1) + ") to (" + str(x2) + ", " + str(y2) +
                                 # ") is " + str(distancesHashtable[((x1, y1), (x2, y2))]))
 
-        self.distancesHashtable[(tuple(self.firstCellOnFire), tuple(self.button))] = findDistanceBetween(self.firstCellOnFire[0], self.firstCellOnFire[1], self.button[0], self.button[1], self.size, self.arr)
-        self.distancesHashtable[(tuple(self.button), tuple(self.firstCellOnFire))] = self.distancesHashtable[(tuple(self.firstCellOnFire), tuple(self.button))]
+        self.distancesHashtable[(tuple(self.firstCellOnFire), tuple(self.button))] = findDistanceBetween(
+            self.firstCellOnFire[0], self.firstCellOnFire[1], self.button[0], self.button[1], self.size, self.arr)
+        self.distancesHashtable[(tuple(self.button), tuple(self.firstCellOnFire))] = self.distancesHashtable[
+            (tuple(self.firstCellOnFire), tuple(self.button))]'''
 
         for row in self.arr:
             for col in row:
@@ -212,24 +212,3 @@ class Ship:
                 else:  # it's on fire
                     print("2", end="")
             print("\n")
-
-    '''
-        def get_firstCellOnFire(self):
-        return self.firstCellOnFire
-
-    def get_bot(self):
-        return self.bot
-
-    def get_button(self):
-        return self.button
-
-    def get_size(self):
-        return self.size
-
-    def get_arr(self):
-        return self.arr
-
-    def get_distancesHashtable(self):
-        return self.distancesHashtable
-    '''
-
