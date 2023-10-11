@@ -1,5 +1,5 @@
 import shipFile
-from shipFile import Ship, getValidNeighbors, findDistanceBetween
+from shipFile import Ship, getValidNeighbors, findDistanceBetween, findDistanceBetweenBot1
 import numpy as np
 import random
 import matplotlib.pyplot as plt
@@ -43,7 +43,7 @@ qList = sorted(qList)
 
 numTrialsPerQVal = []
 # set width of confidence interval
-widthOfInterval = 0.15
+widthOfInterval = 0.1
 for q in qList:
     if q == 0 or q == 1:
         n = (qList[1]*(1-qList[1]))/((widthOfInterval/(2*1.96))**2)
@@ -168,8 +168,8 @@ for q in qList:
         print(bot1)
 
         # if bot spawns closer (or equidistant) to button than the fire does, then bot is guaranteed to win, so we can stop simulation
-        botToButton = findDistanceBetween(bot1[0], bot1[1], button1[0], button1[1], size1, arr1)
-        fireToButton = findDistanceBetween(firstCellOnFire1[0], firstCellOnFire1[1], button1[0], button1[1], size1, arr1)
+        botToButton = findDistanceBetweenBot1(bot1[0], bot1[1], button1[0], button1[1], size1, arr1, firstCellOnFire1)
+        fireToButton = findDistanceBetweenBot1(firstCellOnFire1[0], firstCellOnFire1[1], button1[0], button1[1], size1, arr1, firstCellOnFire1)
         if botToButton <= fireToButton:
             print("win: bot is closer")
             winsHashtableBot1[q] = winsHashtableBot1[q] + 1
@@ -423,6 +423,7 @@ for item in winsHashtableBot3:
 plt.plot(qList, yVals1, label='Bot 1')
 plt.plot(qList, yVals2, label='Bot 2')
 plt.plot(qList, yVals3, label='Bot 3')
+plt.fill_between(qList, [y - widthOfInterval for y in yVals1], [y + widthOfInterval for y in yVals1], color='m', alpha=0.5, label='Confidence Interval')
 plt.title("Success Rates of Four Bots for q Values 0-1")
 plt.xlabel("Q values")
 plt.ylabel("Success Rate")

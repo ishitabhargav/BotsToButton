@@ -52,11 +52,31 @@ def findDistanceBetween(x1, y1, x2, y2, size, arr) -> int:
     return -1  # means something went wrong: never got to (x2, y2)
 
 
+def findDistanceBetweenBot1(x1, y1, x2, y2, size, arr, firstCellOnFire) -> int:
+    if x1 == x2 and y1 == y2 and arr[x1][y1][0] != 0 and arr[x1][y1][0] != 2:
+        return 0
+    queue = [(x1, y1)]
+    distanceFromX1Y1 = {(x1, y1): 0}
+    visited = np.zeros((size, size))
+    visited[x1][y1] = 1
+    while queue:
+        x, y = queue.pop(0)
+        for next_x, next_y in getValidNeighbors(x, y, size):
+            # calculate distance for any cell as long as it's not the initial fire cell, firstCellOnFire
+            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] != 0 and (next_x, next_y) != firstCellOnFire:
+                if next_x == x2 and next_y == y2:
+                    return distanceFromX1Y1[(x, y)] + 1
+                queue.append((next_x, next_y))
+                visited[next_x][next_y] = 1
+                distanceFromX1Y1[(next_x, next_y)] = distanceFromX1Y1[(x, y)] + 1
+    return -1  # means something went wrong: never got to (x2, y2)
+
+
 class Ship:
     # size = 10
 
     def __init__(self):
-        self.size = 40
+        self.size = 25
         self.arr = np.zeros((self.size, self.size, 2))
         self.randRow = np.random.randint(1, self.size - 1)
         self.randCol = np.random.randint(1, self.size - 1)
