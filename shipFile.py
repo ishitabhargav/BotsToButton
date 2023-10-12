@@ -1,6 +1,6 @@
 import numpy as np
 from collections import deque
-
+import heapq
 
 def getValidNeighbors(row, col, size) -> list[(int, int)]:  # neighbors that are inbounds
     validNeighbors = []
