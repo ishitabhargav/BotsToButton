@@ -40,33 +40,78 @@ def findDistanceBetween(x1, y1, x2, y2, size, arr) -> int:
     visited = np.zeros((size, size))
     visited[x1][y1] = 1
     while queue:
-        x, y = queue.popleft()
+        x, y = queue.pop(0)
         for next_x, next_y in getValidNeighbors(x, y, size):
-            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] == 1:
+            # calculate distance for cell of val 1 or 3
+            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] != 0 and arr[next_x][next_y][0] != 2:
                 if next_x == x2 and next_y == y2:
-                    print("found distance")
                     return distanceFromX1Y1[(x, y)] + 1
                 queue.append((next_x, next_y))
                 visited[next_x][next_y] = 1
                 distanceFromX1Y1[(next_x, next_y)] = distanceFromX1Y1[(x, y)] + 1
-    print("Didn't find distance between smth")
-    return -1 # means something went wrong: never got to (x2, y2)
+    return -1  # means something went wrong: never got to (x2, y2)
+
+
+def findDistanceBetweenBot4(x1, y1, x2, y2, size, arr, q, alreadyVisited) -> int:
+    if x1 == x2 and y1 == y2 and arr[x1][y1][0] != 0 and arr[x1][y1][0] != 2:
+        return 0
+    pq = []
+    heapq.heappush(pq, (0, (x1, y1)))
+    visited = np.zeros((size, size))
+    visited[x1][y1] = 1
+    while pq:
+        priority, item = heapq.heappop(pq)
+        x = item[0]
+        y = item[1]
+        for next_x, next_y in getValidNeighbors(x, y, size):
+            # calculate distance for cell of val 1 or 3
+            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] != 0 and arr[next_x][next_y][0] != 2 and alreadyVisited[next_x][next_y] == 0:
+                if next_x == x2 and next_y == y2:
+                    return priority + 1
+                visited[next_x][next_y] = 1
+                priority = priority + 1
+                if arr[next_x][next_y][0] == 5 or arr[next_x][next_y][0] == 4:
+                    priority = priority + arr[next_x][next_y][0]*q
+                    if arr[next_x][next_y][1] == 3 or arr[next_x][next_y][1] == 2 or arr[next_x][next_y][1] == 1:
+                        priority = priority - arr[next_x][next_y][1]*q
+                heapq.heappush(pq, (priority, (next_x, next_y)))
+    return -1  # means something went wrong: never got to (x2, y2)
+
+
+def findDistanceBetweenBot1(x1, y1, x2, y2, size, arr, firstCellOnFire) -> int:
+    if x1 == x2 and y1 == y2 and arr[x1][y1][0] != 0 and arr[x1][y1][0] != 2:
+        return 0
+    queue = [(x1, y1)]
+    distanceFromX1Y1 = {(x1, y1): 0}
+    visited = np.zeros((size, size))
+    visited[x1][y1] = 1
+    while queue:
+        x, y = queue.pop(0)
+        for next_x, next_y in getValidNeighbors(x, y, size):
+            # calculate distance for any cell as long as it's not the initial fire cell, firstCellOnFire
+            if visited[next_x][next_y] != 1 and arr[next_x][next_y][0] != 0 and (next_x, next_y) != firstCellOnFire:
+                if next_x == x2 and next_y == y2:
+                    return distanceFromX1Y1[(x, y)] + 1
+                queue.append((next_x, next_y))
+                visited[next_x][next_y] = 1
+                distanceFromX1Y1[(next_x, next_y)] = distanceFromX1Y1[(x, y)] + 1
+    return -1  # means it is first fire cell or something went wrong: never got to (x2, y2)
 
 
 class Ship:
-    #size = 10
+    # size = 10
 
     def __init__(self):
-        self.size = 15
+        self.size = 30
         self.arr = np.zeros((self.size, self.size, 2))
         self.randRow = np.random.randint(1, self.size - 1)
         self.randCol = np.random.randint(1, self.size - 1)
         self.arr[self.randRow][self.randCol][0] = 1  # open first cell
         self.closedNeighbors = []
         self.openCells = [[self.randRow, self.randCol]]
-        #print("Open Cells:")
-        #print(openCells)
-        #print()
+        # print("Open Cells:")
+        # print(openCells)
+        # print()
         addNeighbors(self.randRow, self.randCol, self.arr, self.closedNeighbors, self.size)
         """
         for row in arr:
@@ -88,11 +133,11 @@ class Ship:
             self.arr[self.rowToOpen][self.colToOpen][0] = 1
             self.openCells.append([self.rowToOpen, self.colToOpen])
             # 2. remove existing neighbors in closedNeighbors that now have 2 or more open neighbors
-            validNeighbors = getValidNeighbors(rowToOpen, colToOpen, self.size)
-            for neighbor in validNeighbors:
+            self.validNeighbors = getValidNeighbors(self.rowToOpen, self.colToOpen, self.size)
+            for neighbor in self.validNeighbors:
                 if self.arr[neighbor[0]][neighbor[1]][0] == 0:  # it's a closed neighbor
-                    neighborsOfClosed = getValidNeighbors(neighbor[0], neighbor[1], self.size)
-                    if numOpenNeighbors(neighborsOfClosed, self.arr) > 1 and neighbor in self.closedNeighbors:
+                    self.neighborsOfClosed = getValidNeighbors(neighbor[0], neighbor[1], self.size)
+                    if numOpenNeighbors(self.neighborsOfClosed, self.arr) > 1 and neighbor in self.closedNeighbors:
                         self.closedNeighbors.remove(neighbor)
             # 3. add the closed neighbors of neighborToOpen
             addNeighbors(self.rowToOpen, self.colToOpen, self.arr, self.closedNeighbors, self.size)
@@ -117,26 +162,27 @@ class Ship:
             if numOpenNeighbors(getValidNeighbors(cell[0], cell[1], self.size), self.arr) == 1:
                 self.deadEnds.append(cell)
 
-        #print("Dead Ends:")
-        #print(deadEnds)
-        #print("\n")
+        # print("Dead Ends:")
+        # print(deadEnds)
+        # print("\n")
         self.origNumDeadEnds = len(self.deadEnds)
-        #print("Now starting with dead ends.\n")
+        # print("Now starting with dead ends.\n")
         while len(self.deadEnds) > 0.50 * self.origNumDeadEnds:
-            self.randCell = np.random.randint(0, len(self.deadEnds))
-            self.deadEnd = self.deadEnds.pop(self.randCell)
-            self.deadEndsClosedNeighbors = []
-            self.validNeighbors = getValidNeighbors(self.deadEnd[0], self.deadEnd[1], self.size)
-            for neighbor in self.validNeighbors:  # can change to x, y
+            randCell = np.random.randint(0, len(self.deadEnds))
+            deadEnd = self.deadEnds.pop(randCell)
+            deadEndsClosedNeighbors = []
+            validNeighbors = getValidNeighbors(deadEnd[0], deadEnd[1], self.size)
+            for neighbor in validNeighbors:  # can change to x, y
                 if self.arr[neighbor[0]][neighbor[1]][0] == 0:
                     deadEndsClosedNeighbors.append(neighbor)
-            randCell = np.random.randint(0, len(deadEndsClosedNeighbors))
-            deadEndNeighbor = deadEndsClosedNeighbors.pop(randCell)
-            self.arr[deadEndNeighbor[0]][deadEndNeighbor[1]][0] = 1
-            for deadEnd in deadEnds:
-                if numOpenNeighbors(getValidNeighbors(deadEnd[0], deadEnd[1], self.size), self.arr) != 1:
-                    deadEnds.remove(deadEnd)
-            self.openCells.append(deadEndNeighbor)
+            if not deadEndsClosedNeighbors:
+                randCell2 = np.random.randint(0, len(deadEndsClosedNeighbors))
+                deadEndNeighbor = deadEndsClosedNeighbors.pop(randCell2)
+                self.arr[deadEndNeighbor[0]][deadEndNeighbor[1]][0] = 1
+                for deadEnd in self.deadEnds:
+                    if numOpenNeighbors(getValidNeighbors(deadEnd[0], deadEnd[1], self.size), self.arr) != 1:
+                        self.deadEnds.remove(deadEnd)
+                self.openCells.append(deadEndNeighbor)
             """for row in arr:
                 for col in row:
                     if col[0] == 1:  # it's open
@@ -147,7 +193,7 @@ class Ship:
             print("Dead ends now:")
             print(deadEnds)
             print("\n")
-    
+
         print("End of Dead Ends\n")"""
 
         '''print("after dead ends ")
@@ -178,7 +224,7 @@ class Ship:
         for item in self.openCells:
             print(str(self.arr[item[0]][item[1]][0]) + " ", end="")
         print("\n")'''
-        # make distances hashtable to store initial distances from open cells to other open cells
+        ''''# make distances hashtable to store initial distances from open cells to other open cells
         self.distancesHashtable = {}
 
         for x1 in range(self.size):
@@ -191,14 +237,17 @@ class Ship:
                                 # print("distance from (" + str(x1) + ", " + str(y1) + ") to (" + str(x2) + ", " + str(y2) +
                                 # ") is 0")
                             else:
-                                self.distancesHashtable[((x1, y1), (x2, y2))] = findDistanceBetween(x1, y1, x2, y2, self.size, self.arr)
+                                self.distancesHashtable[((x1, y1), (x2, y2))] = findDistanceBetween(x1, y1, x2, y2,
+                                                                                                    self.size, self.arr)
                                 if self.distancesHashtable[((x1, y1), (x2, y2))] == -1:
                                     self.distancesHashtable[((x1, y1), (x2, y2))] = float('inf')
                                 # print("distance from (" + str(x1) + ", " + str(y1) + ") to (" + str(x2) + ", " + str(y2) +
                                 # ") is " + str(distancesHashtable[((x1, y1), (x2, y2))]))
 
-        self.distancesHashtable[(tuple(self.firstCellOnFire), tuple(self.button))] = findDistanceBetween(self.firstCellOnFire[0], self.firstCellOnFire[1], self.button[0], self.button[1], self.size, self.arr)
-        self.distancesHashtable[(tuple(self.button), tuple(self.firstCellOnFire))] = self.distancesHashtable[(tuple(self.firstCellOnFire), tuple(self.button))]
+        self.distancesHashtable[(tuple(self.firstCellOnFire), tuple(self.button))] = findDistanceBetween(
+            self.firstCellOnFire[0], self.firstCellOnFire[1], self.button[0], self.button[1], self.size, self.arr)
+        self.distancesHashtable[(tuple(self.button), tuple(self.firstCellOnFire))] = self.distancesHashtable[
+            (tuple(self.firstCellOnFire), tuple(self.button))]'''
 
         for row in self.arr:
             for col in row:
@@ -209,24 +258,3 @@ class Ship:
                 else:  # it's on fire
                     print("2", end="")
             print("\n")
-
-    '''
-        def get_firstCellOnFire(self):
-        return self.firstCellOnFire
-
-    def get_bot(self):
-        return self.bot
-
-    def get_button(self):
-        return self.button
-
-    def get_size(self):
-        return self.size
-
-    def get_arr(self):
-        return self.arr
-
-    def get_distancesHashtable(self):
-        return self.distancesHashtable
-    '''
-
