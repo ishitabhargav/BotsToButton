@@ -11,7 +11,7 @@ def spreadFire(arr, neighborsOfFire, size, q, fireCells):
         if arr[neighbor[0]][neighbor[1]][0] == 1:
             k = numFireNeighbors(getValidNeighbors(neighbor[0], neighbor[1], size), arr)
             prob = 1 - ((1 - q) ** k)
-            rand = random.random() #np.random.rand(0, 1)
+            rand = random.random()  # np.random.rand(0, 1)
             if rand < prob:  # the cell catches on fire
                 arr[neighbor[0]][neighbor[1]][0] = 2
                 neighborsOfFire.remove(neighbor)
@@ -50,9 +50,9 @@ for q in qList:
     winsHashtableBot4[q] = 0
 
 # Bot 1
-#for q in qList:
-    #for count in range(10):
-        #print("Q value and count value are as follows: " + str(q) + " " + str(count))
+# for q in qList:
+# for count in range(10):
+# print("Q value and count value are as follows: " + str(q) + " " + str(count))
 q = 0.95
 ship = Ship()
 size = ship.size
@@ -81,11 +81,11 @@ if distancesHashtable[(bot, button)] <= distancesHashtable[(firstCellOnFire, but
     print("win: bot is closer")
     alreadyWon = True
     winsHashtableBot1[q] = winsHashtableBot1[q] + 1
-    #continue
+    # continue
 
 # if q=1 and bot spawns farther from button than the fire, then bot is guaranteed to lose
-#if q == 1 and distancesHashtable[(bot, button)] > distancesHashtable[(firstCellOnFire, button)]:
-    #continue
+# if q == 1 and distancesHashtable[(bot, button)] > distancesHashtable[(firstCellOnFire, button)]:
+# continue
 
 minDistance = distancesHashtable[(bot, button)]
 
@@ -104,7 +104,7 @@ while arr[bot[0]][bot[1]][0] != 2 and arr[button[0]][button[1]][0] != 2 and not 
         break
 
     validOpen = getValidOpen(bot[0], bot[1], size, arr, firstCellOnFire)
-    #print(bot)
+    # print(bot)
 
     nextCell = bot
     for neighbor in validOpen:
